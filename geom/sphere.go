@@ -1,6 +1,8 @@
 package geom
 
-import "math"
+import (
+	"math"
+)
 
 type Sphere struct {
 	center Vec

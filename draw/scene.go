@@ -9,6 +9,8 @@ import (
 	"github.com/templarrei/golearnyouatracer/geom"
 )
 
+const bias = 0.001
+
 type Hittable interface {
 	Hit(r geom.Ray, tMin, tMax float64) (t float64, p geom.Vec, n geom.Vec)
 }
@@ -33,7 +35,8 @@ func (s Scene) WritePPM(w io.Writer, h Hittable, samples float64, c Camera) erro
 				r := c.Ray(u, v)
 				col = col.Add(color(r, h))
 			}
-			col = col.Scale(1 / samples)
+			// Apply Gamma
+			col = col.Scale(1 / samples).Gamma(2)
 			ir := int(255.99 * col.R())
 			ig := int(255.99 * col.G())
 			ib := int(255.99 * col.B())
@@ -46,8 +49,11 @@ func (s Scene) WritePPM(w io.Writer, h Hittable, samples float64, c Camera) erro
 }
 
 func color(r geom.Ray, h Hittable) geom.Vec {
-	if t, _, n := h.Hit(r, 0, math.MaxFloat64); t > 0 {
-		return geom.NewVec(n.X()+1, n.Y()+1, n.Z()+1).Scale(0.5)
+	if t, p, n := h.Hit(r, bias, math.MaxFloat64); t > 0 {
+		target := p.
+			Add(n).
+			Add(geom.RandVecInSphere())
+		return color(geom.NewRay(p, target.Sub(p)), h).Scale(0.5)
 	}
 	t := 0.5 * (r.Dir.ToUnit().Y() + 1)
 	white := geom.NewVec(1, 1, 1).Scale(1 - t)

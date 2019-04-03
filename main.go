@@ -23,7 +23,7 @@ func main() {
 	}
 
 	l := draw.NewList(
-		// geom.NewSphere(geom.NewVec(0, 1, -1), 1),
+		// geom.NewSphere(geom.NewVec(1, 0, -1), 0.1),
 		geom.NewSphere(geom.NewVec(0, 0, -1), 0.5),
 		geom.NewSphere(geom.NewVec(0, -100.5, -1), 100),
 	)

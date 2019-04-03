@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/rand"
 )
 
 type Vec [3]float64
@@ -30,6 +31,15 @@ func (v Vec) G() float64 {
 }
 func (v Vec) B() float64 {
 	return v[2]
+}
+
+func (v Vec) Gamma(n float64) Vec {
+	ni := 1 / n
+	return NewVec(
+		math.Pow(v.R(), ni),
+		math.Pow(v.G(), ni),
+		math.Pow(v.B(), ni),
+	)
 }
 
 func (v Vec) Add(v2 Vec) Vec {
@@ -114,4 +124,13 @@ func (v Vec) ToUnit() (u Vec) {
 	u[1] = v[1] * k
 	u[2] = v[2] * k
 	return
+}
+
+func RandVecInSphere() Vec {
+	for {
+		v := NewVec(rand.Float64(), rand.Float64(), rand.Float64()).Scale(2).Sub(NewVec(1, 1, 1))
+		if v.LenSq() < 1 {
+			return v
+		}
+	}
 }
