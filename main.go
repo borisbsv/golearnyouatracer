@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/templarrei/golearnyouatracer/draw"
 	"github.com/templarrei/golearnyouatracer/geom"
 )
 
@@ -11,31 +12,14 @@ func main() {
 	f, _ := os.Create("test.ppm")
 	defer f.Close()
 
-	const nx, ny float64 = 200, 100
-	fmt.Fprintf(f, "P3\n%f %f\n255\n", nx, ny)
+	const x, y float64 = 200, 100
 
-	llCorner := geom.NewVec(-2, -1, -1)
-	horizontal := geom.NewVec(4, 0, 0)
-	vertical := geom.NewVec(0, 2, 0)
-	origin := geom.NewVec(0, 0, 0)
+	scene := draw.NewScene(x, y)
 
-	for j := ny - 1; j >= 0; j-- {
-		for i := 0.0; i < nx; i++ {
-			u := i / nx
-			v := j / ny
+	l := draw.NewList(
+		geom.NewSphere(geom.NewVec(0, 0, -1), 0.5),
+		geom.NewSphere(geom.NewVec(0, -100.5, -1), 100),
+	)
 
-			r := geom.NewRay(
-				origin,
-				llCorner.
-					Add(horizontal.Scale(u)).
-					Add(vertical.Scale(v)),
-			)
-
-			c := r.Color()
-			ir := int(255.99 * c.R())
-			ig := int(255.99 * c.G())
-			ib := int(255.99 * c.B())
-			fmt.Fprintf(f, "%d %d %d\n", ir, ig, ib)
-		}
-	}
+	fmt.Println(scene.WritePPM(f, l))
 }
