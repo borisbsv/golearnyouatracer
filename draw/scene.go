@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/rand"
 
 	"github.com/templarrei/golearnyouatracer/geom"
 )
@@ -20,30 +21,22 @@ func NewScene(w, h float64) Scene {
 	return Scene{w: w, h: h}
 }
 
-func (s Scene) WritePPM(w io.Writer, h Hittable) error {
+func (s Scene) WritePPM(w io.Writer, h Hittable, samples float64, c Camera) error {
 	fmt.Fprintf(w, "P3\n%f %f\n255\n", s.w, s.h)
-
-	llCorner := geom.NewVec(-2, -1, -1)
-	horizontal := geom.NewVec(4, 0, 0)
-	vertical := geom.NewVec(0, 2, 0)
-	origin := geom.NewVec(0, 0, 0)
 
 	for j := s.h - 1; j >= 0; j-- {
 		for i := 0.0; i < s.w; i++ {
-			u := i / s.w
-			v := j / s.h
-
-			r := geom.NewRay(
-				origin,
-				llCorner.
-					Add(horizontal.Scale(u)).
-					Add(vertical.Scale(v)),
-			)
-
-			c := color(r, h)
-			ir := int(255.99 * c.R())
-			ig := int(255.99 * c.G())
-			ib := int(255.99 * c.B())
+			col := geom.NewVec(0, 0, 0)
+			for sm := 0.0; sm < samples; sm++ {
+				u := (i + rand.Float64()) / s.w
+				v := (j + rand.Float64()) / s.h
+				r := c.Ray(u, v)
+				col = col.Add(color(r, h))
+			}
+			col = col.Scale(1 / samples)
+			ir := int(255.99 * col.R())
+			ig := int(255.99 * col.G())
+			ib := int(255.99 * col.B())
 			if _, err := fmt.Fprintf(w, "%d %d %d\n", ir, ig, ib); err != nil {
 				return err
 			}
