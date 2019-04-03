@@ -88,8 +88,8 @@ func (v Vec) LenSq() float64 {
 	return v[0]*v[0] + v[1]*v[1] + v[2]*v[2]
 }
 
-// Scaled returns a vector scaled by a scalar
-func (v Vec) Scaled(n float64) Vec {
+// Scale returns a vector scaled by a scalar
+func (v Vec) Scale(n float64) Vec {
 	return Vec{v[0] * n, v[1] * n, v[2] * n}
 }
 
@@ -107,11 +107,8 @@ func (v Vec) Cross(v2 Vec) Vec {
 	}
 }
 
-// Unit represents a unit vector (length 1)
-type Unit Vec
-
 // ToUnit converts this vector to a unit vector
-func (v Vec) ToUnit() (u Unit) {
+func (v Vec) ToUnit() (u Vec) {
 	k := 1.0 / v.Len()
 	u[0] = v[0] * k
 	u[1] = v[1] * k
