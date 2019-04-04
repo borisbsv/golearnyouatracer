@@ -6,13 +6,14 @@ import (
 
 	"github.com/templarrei/golearnyouatracer/draw"
 	"github.com/templarrei/golearnyouatracer/geom"
+	"github.com/templarrei/golearnyouatracer/material"
 )
 
 func main() {
 	f, _ := os.Create("test.ppm")
 	defer f.Close()
 
-	const x, y float64 = 200, 100
+	const x, y float64 = 400, 200
 
 	scene := draw.NewScene(x, y)
 	cam := draw.Camera{
@@ -23,9 +24,10 @@ func main() {
 	}
 
 	l := draw.NewList(
-		// geom.NewSphere(geom.NewVec(1, 0, -1), 0.1),
-		geom.NewSphere(geom.NewVec(0, 0, -1), 0.5),
-		geom.NewSphere(geom.NewVec(0, -100.5, -1), 100),
+		geom.NewSphere(geom.NewVec(0, 0, -1), 0.5, &material.Lambertian{geom.NewVec(0.8, 0.3, 0.3)}),
+		geom.NewSphere(geom.NewVec(0, -100.5, -1), 100, &material.Lambertian{geom.NewVec(0.8, 0.3, 0)}),
+		geom.NewSphere(geom.NewVec(1, 0, -1), 0.5, material.NewMetal(geom.NewVec(0.8, 0.6, 0.2), 1)),
+		geom.NewSphere(geom.NewVec(-1, 0, -1), 0.5, material.NewMetal(geom.NewVec(0.8, 0.8, 0.8), 0.3)),
 	)
 
 	fmt.Println(scene.WritePPM(f, l, 100, cam))

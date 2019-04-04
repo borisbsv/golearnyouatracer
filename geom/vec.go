@@ -42,6 +42,10 @@ func (v Vec) Gamma(n float64) Vec {
 	)
 }
 
+func (v Vec) Reflect(n Vec) Vec {
+	return v.Sub(n.Scale(2 * v.Dot(n)))
+}
+
 func (v Vec) Add(v2 Vec) Vec {
 	return Vec{
 		v[0] + v2[0],

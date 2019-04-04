@@ -12,7 +12,7 @@ import (
 const bias = 0.001
 
 type Hittable interface {
-	Hit(r geom.Ray, tMin, tMax float64) (t float64, p geom.Vec, n geom.Vec)
+	Hit(r geom.Ray, tMin, tMax float64) (t float64, p geom.Vec, n geom.Vec, m geom.Material)
 }
 
 type Scene struct {
@@ -33,7 +33,7 @@ func (s Scene) WritePPM(w io.Writer, h Hittable, samples float64, c Camera) erro
 				u := (i + rand.Float64()) / s.w
 				v := (j + rand.Float64()) / s.h
 				r := c.Ray(u, v)
-				col = col.Add(color(r, h))
+				col = col.Add(color(r, h, 0))
 			}
 			// Apply Gamma
 			col = col.Scale(1 / samples).Gamma(2)
@@ -48,12 +48,17 @@ func (s Scene) WritePPM(w io.Writer, h Hittable, samples float64, c Camera) erro
 	return nil
 }
 
-func color(r geom.Ray, h Hittable) geom.Vec {
-	if t, p, n := h.Hit(r, bias, math.MaxFloat64); t > 0 {
-		target := p.
-			Add(n).
-			Add(geom.RandVecInSphere())
-		return color(geom.NewRay(p, target.Sub(p)), h).Scale(0.5)
+func color(r geom.Ray, h Hittable, depth int) geom.Vec {
+	if depth > 50 {
+		return geom.NewVec(0, 0, 0)
+	}
+
+	if t, p, n, mat := h.Hit(r, bias, math.MaxFloat64); t > 0 {
+		scattered, attenuation, ok := mat.Scatter(r, p, n)
+		if !ok {
+			return geom.NewVec(0, 0, 0)
+		}
+		return attenuation.Mul(color(scattered, h, depth+1))
 	}
 	t := 0.5 * (r.Dir.ToUnit().Y() + 1)
 	white := geom.NewVec(1, 1, 1).Scale(1 - t)
