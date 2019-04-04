@@ -46,6 +46,20 @@ func (v Vec) Reflect(n Vec) Vec {
 	return v.Sub(n.Scale(2 * v.Dot(n)))
 }
 
+func (v Vec) Refract(normal Vec, niOverNT float64) (Vec, bool) {
+	uv := v.ToUnit()
+	dt := uv.Dot(normal)
+	discriminant := 1 - niOverNT*niOverNT*(1-dt*dt)
+	if discriminant <= 0 {
+		return Vec{0, 0, 0}, false
+	}
+	refracted := uv.
+		Sub(normal.Scale(dt)).
+		Scale(niOverNT).
+		Sub(normal.Scale(math.Sqrt(discriminant)))
+	return refracted, true
+}
+
 func (v Vec) Add(v2 Vec) Vec {
 	return Vec{
 		v[0] + v2[0],

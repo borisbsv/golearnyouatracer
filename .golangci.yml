@@ -1,0 +1,21 @@
+---
+run:
+  deadline: 5m
+  tests: false
+
+linters-settings:
+
+linters:
+  enable-all: true
+  disable:
+    - gochecknoglobals
+    - gochecknoinits
+
+issues:
+  exclude-rules:
+    - text: "weak cryptographic primitive"
+      linters:
+        - gosec
+    - text: "Binds to all network interfaces"
+      linters:
+        - gosec
