@@ -12,6 +12,10 @@ func NewList(args ...Hittable) HittableList {
 	return HittableList{s: args}
 }
 
+func (l *HittableList) Append(h Hittable) {
+	l.s = append(l.s, h)
+}
+
 func (l HittableList) Hit(r geom.Ray, tMin, tMax float64) (float64, geom.Vec, geom.Vec, geom.Material) {
 	closest := tMax
 	var t float64
