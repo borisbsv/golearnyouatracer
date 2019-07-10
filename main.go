@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"time"
 
 	"github.com/templarrei/golearnyouatracer/draw"
 	"github.com/templarrei/golearnyouatracer/geom"
@@ -14,7 +15,9 @@ func main() {
 	f, _ := os.Create("test.ppm")
 	defer f.Close()
 
-	const x, y float64 = 200, 100
+	var x, y float64 = 200, 100
+	// x *= 4
+	// y *= 4
 
 	scene := draw.NewScene(x, y)
 	lFrom := geom.NewVec(3, 3, 2)
@@ -24,14 +27,21 @@ func main() {
 		lFrom,
 		lAt,
 		vUp,
-		90,
+		30,
 		x/y,
 		lFrom.Sub(lAt).Len(),
 		0.01,
 	)
 
 	l := randomScene()
-	fmt.Println(scene.WritePPM(f, l, 100, cam))
+	now := time.Now()
+	fmt.Println(now, "creating scene")
+	// scene.Create(l, 100, cam)
+	cpus := 16
+	fmt.Printf("Rendering with %d cpus\n", cpus)
+	scene.Draw(l, 100, cam, cpus)
+	fmt.Println(time.Since(now), "writing scene")
+	fmt.Println(scene.WritePPM(f))
 }
 
 func randomScene() draw.Hittable {

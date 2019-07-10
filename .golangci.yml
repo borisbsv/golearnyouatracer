@@ -10,6 +10,7 @@ linters:
   disable:
     - gochecknoglobals
     - gochecknoinits
+    - lll
 
 issues:
   exclude-rules:

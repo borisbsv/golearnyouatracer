@@ -1,6 +1,8 @@
 package material
 
-import "github.com/templarrei/golearnyouatracer/geom"
+import (
+	"github.com/templarrei/golearnyouatracer/geom"
+)
 
 type Metal struct {
 	Albedo geom.Vec

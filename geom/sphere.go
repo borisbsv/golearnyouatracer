@@ -22,18 +22,18 @@ func (s Sphere) Hit(r Ray, tMin, tMax float64) (float64, Vec, Vec, Material) {
 	c := oc.Dot(oc) - s.radius*s.radius
 	discriminant := b*b - a*c
 
-	if discriminant <= 0 {
+	if discriminant < 0 {
 		return 0, Vec{}, Vec{}, s.mat
 	}
 
 	var p Vec
-	t := (-b - math.Sqrt(b*b-a*c)) / a
+	t := (-b - math.Sqrt(discriminant)) / a
 	if tMax > t && t > tMin {
 		p = r.AtParam(t)
 		return t, p, p.Sub(s.center).ToUnit(), s.mat
 	}
 
-	t = (-b + math.Sqrt(b*b-a*c)) / a
+	t = (-b + math.Sqrt(discriminant)) / a
 	if tMax > t && t > tMin {
 		p = r.AtParam(t)
 		return t, p, p.Sub(s.center).ToUnit(), s.mat
