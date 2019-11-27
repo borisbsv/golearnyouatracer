@@ -6,7 +6,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/templarrei/golearnyouatracer/geom"
+	"github.com/borisbsv/golearnyouatracer/geom"
 )
 
 const bias = 0.001

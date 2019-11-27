@@ -1,8 +1,6 @@
 package draw
 
-import (
-	"github.com/templarrei/golearnyouatracer/geom"
-)
+import "github.com/borisbsv/golearnyouatracer/geom"
 
 type HittableList struct {
 	s []Hittable

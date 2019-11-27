@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/templarrei/golearnyouatracer/geom"
+	"github.com/borisbsv/golearnyouatracer/geom"
 )
 
 type Camera struct {
@@ -14,7 +14,9 @@ type Camera struct {
 	lensRadius                             float64
 }
 
-var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 func NewCamera(lFrom, lAt, vUp geom.Vec, vFOV, aspectRatio, focusDist, aperture float64) Camera {
 	theta := vFOV * math.Pi / 180
@@ -66,7 +68,7 @@ func (c Camera) Ray(s, t float64) geom.Ray {
 func randomInUnitDisc() geom.Vec {
 	var p geom.Vec
 	for {
-		p = geom.NewVec(rng.Float64(), rng.Float64(), 0).Scale(2).Sub(geom.NewVec(1, 1, 0))
+		p = geom.NewVec(rand.Float64(), rand.Float64(), 0).Scale(2).Sub(geom.NewVec(1, 1, 0))
 		if p.Dot(p) < 1 {
 			return p
 		}

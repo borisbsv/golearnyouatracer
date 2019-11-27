@@ -1,6 +1,6 @@
 package material
 
-import "github.com/templarrei/golearnyouatracer/geom"
+import "github.com/borisbsv/golearnyouatracer/geom"
 
 type Dielectric struct {
 	refractionIndex float64

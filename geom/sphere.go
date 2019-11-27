@@ -22,7 +22,7 @@ func (s Sphere) Hit(r Ray, tMin, tMax float64) (float64, Vec, Vec, Material) {
 	c := oc.Dot(oc) - s.radius*s.radius
 	discriminant := b*b - a*c
 
-	if discriminant <= 0 {
+	if discriminant < 0 {
 		return 0, Vec{}, Vec{}, s.mat
 	}
 

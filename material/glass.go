@@ -4,7 +4,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/templarrei/golearnyouatracer/geom"
+	"github.com/borisbsv/golearnyouatracer/geom"
 )
 
 type Glass struct {
@@ -37,7 +37,7 @@ func (g Glass) Scatter(in geom.Ray, p, n geom.Vec) (geom.Ray, geom.Vec, bool) {
 	}
 
 	attenuation := geom.NewVec(1, 1, 1)
-	if rand.Float64() > reflectProbability {
+	if rand.Float64() < reflectProbability {
 		reflected := in.Dir.Reflect(n)
 		return geom.NewRay(p, reflected), attenuation, true
 	}
@@ -46,6 +46,6 @@ func (g Glass) Scatter(in geom.Ray, p, n geom.Vec) (geom.Ray, geom.Vec, bool) {
 
 func shlick(cosine, refractionIndex float64) float64 {
 	r0 := (1 - refractionIndex) / (1 + refractionIndex)
-	r0 = r0 * r0
+	r0 *= r0
 	return r0 + (1-r0)*math.Pow((1-cosine), 5)
 }

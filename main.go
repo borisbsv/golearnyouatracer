@@ -5,9 +5,9 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/templarrei/golearnyouatracer/draw"
-	"github.com/templarrei/golearnyouatracer/geom"
-	"github.com/templarrei/golearnyouatracer/material"
+	"github.com/borisbsv/golearnyouatracer/draw"
+	"github.com/borisbsv/golearnyouatracer/geom"
+	"github.com/borisbsv/golearnyouatracer/material"
 )
 
 func main() {
