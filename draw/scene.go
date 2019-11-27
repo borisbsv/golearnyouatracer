@@ -5,6 +5,7 @@ import (
 	"io"
 	"math"
 	"math/rand"
+	"sync"
 
 	"github.com/borisbsv/golearnyouatracer/geom"
 )
@@ -16,27 +17,48 @@ type Hittable interface {
 }
 
 type Scene struct {
-	w, h float64
+	w, h     float64
+	internal [][]geom.Vec
 }
 
-func NewScene(w, h float64) Scene {
-	return Scene{w: w, h: h}
+func NewScene(w, h float64) *Scene {
+	return &Scene{w: w, h: h}
 }
 
-func (s Scene) WritePPM(w io.Writer, h Hittable, samples float64, c Camera) error {
-	fmt.Fprintf(w, "P3\n%f %f\n255\n", s.w, s.h)
+func (s *Scene) Generate(w io.Writer, h Hittable, samples float64, c Camera, concurrency int) error {
+	s.internal = make([][]geom.Vec, int(s.h))
+	var wg sync.WaitGroup
 
-	for j := s.h - 1; j >= 0; j-- {
-		for i := 0.0; i < s.w; i++ {
-			col := geom.NewVec(0, 0, 0)
-			for sm := 0.0; sm < samples; sm++ {
-				u := (i + rand.Float64()) / s.w
-				v := (j + rand.Float64()) / s.h
-				r := c.Ray(u, v)
-				col = col.Add(color(r, h, 0))
+	for cpus := 1.0; cpus <= float64(concurrency); cpus++ {
+		wg.Add(1)
+		go func(cpu float64) {
+			defer wg.Done()
+			for j := s.h - cpu; j >= 0; j -= float64(concurrency) {
+				s.internal[int(j)] = make([]geom.Vec, int(s.w))
+				for i := 0.0; i < s.w; i++ {
+					col := geom.NewVec(0, 0, 0)
+					for sm := 0.0; sm < samples; sm++ {
+						u := (i + rand.Float64()) / s.w
+						v := (j + rand.Float64()) / s.h
+						r := c.Ray(u, v)
+						col = col.Add(color(r, h, 0))
+					}
+					// Apply Gamma
+					col = col.Scale(1 / samples).Gamma(2)
+					s.internal[int(j)][int(i)] = col
+				}
 			}
-			// Apply Gamma
-			col = col.Scale(1 / samples).Gamma(2)
+		}(cpus)
+	}
+	wg.Wait()
+	return nil
+}
+
+func (s *Scene) WritePPM(w io.Writer) error {
+	fmt.Fprintf(w, "P3\n%.0f %.0f\n255\n", s.w, s.h)
+	for j := int(s.h - 1); j >= 0; j-- {
+		for i := 0; i < int(s.w); i++ {
+			col := s.internal[j][i]
 			ir := int(255.99 * col.R())
 			ig := int(255.99 * col.G())
 			ib := int(255.99 * col.B())

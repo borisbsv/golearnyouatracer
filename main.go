@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"runtime"
 
 	"github.com/borisbsv/golearnyouatracer/draw"
 	"github.com/borisbsv/golearnyouatracer/geom"
@@ -31,7 +32,14 @@ func main() {
 	)
 
 	l := randomScene()
-	fmt.Println(scene.WritePPM(f, l, 100, cam))
+	if err := scene.Generate(f, l, 100, cam, runtime.GOMAXPROCS(0)); err != nil {
+
+		fmt.Println(err)
+		return
+	}
+	if err := scene.WritePPM(f); err != nil {
+		fmt.Println(err)
+	}
 }
 
 func randomScene() draw.Hittable {
